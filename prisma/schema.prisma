@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String     @id @default(uuid())
+  name       String
+  email      String     @unique
+  password   String
+  contact    String
+  local      String
+  admin      Boolean    @default(false)
+  created_at DateTime   @default(now())
+  updated_at DateTime   @default(now())
+  TimeBank   TimeBank[]
+
+  @@map("User")
+}
+
+model TimeBank {
+  id          String   @id @default(uuid())
+  userId      String    //Valida usuario
+  timestamp   DateTime @default(now()) // registra horario
+  eventType   String   // Pode ser "entrada", "intervalo", "retorno_intervalo", "saida"
+  description String? // Descrição do registro
+
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId], name: "user_time_bank_index")
+  @@map("time_banks")
+}
